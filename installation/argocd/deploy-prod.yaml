@@ -1,0 +1,57 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: auth-service-prod
+  namespace: argocd
+spec:
+  project: project-catalogue
+  source:
+    repoURL: https://github.com/Fauler/project-catalogue-kubernetes.git
+    targetRevision: main
+    path: auth-service
+    helm:
+      valueFiles:
+        - values-prod.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: catalogue-prod
+  syncPolicy: {}
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: user-service-prod
+  namespace: argocd
+spec:
+  project: project-catalogue
+  source:
+    repoURL: https://github.com/Fauler/project-catalogue-kubernetes.git
+    targetRevision: main
+    path: user-service
+    helm:
+      valueFiles:
+        - values-prod.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: catalogue-prod
+  syncPolicy: {}
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: project-service-prod
+  namespace: argocd
+spec:
+  project: project-catalogue
+  source:
+    repoURL: https://github.com/Fauler/project-catalogue-kubernetes.git
+    targetRevision: main
+    path: project-service
+    helm:
+      valueFiles:
+        - values-prod.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: catalogue-prod
+  syncPolicy: {}
+

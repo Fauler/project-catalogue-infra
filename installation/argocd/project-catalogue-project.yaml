@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: project-catalogue
+  namespace: argocd
+spec:
+  description: Project Catalogue microservices
+  sourceRepos:
+    - https://github.com/Fauler/project-catalogue-kubernetes.git
+  destinations:
+    - namespace: catalogue-dev
+      server: https://kubernetes.default.svc
+    - namespace: catalogue-prod
+      server: https://kubernetes.default.svc
+  clusterResourceWhitelist:
+    - group: ""
+      kind: Namespace
+
