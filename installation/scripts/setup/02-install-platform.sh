@@ -11,7 +11,7 @@ fi
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 helm repo add argo https://argoproj.github.io/argo-helm
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-helm repo add elastic https://helm.elastic.co
+helm repo add grafana https://grafana.github.io/helm-charts
 helm repo add bitnami https://charts.bitnami.com/bitnami
 helm repo update
 
@@ -37,32 +37,18 @@ helm upgrade --install kube-prometheus prometheus-community/kube-prometheus-stac
   --set grafana.adminPassword=catalogue_admin \
   --set grafana.service.type=ClusterIP \
   --set prometheus.prometheusSpec.serviceMonitorSelectorNilUsesHelmValues=false \
+  --set grafana.additionalDataSources[0].name=Loki \
+  --set grafana.additionalDataSources[0].type=loki \
+  --set grafana.additionalDataSources[0].url=http://loki.logging.svc.cluster.local:3100 \
+  --set grafana.additionalDataSources[0].access=proxy \
   --wait --timeout 5m
 
-echo "Installing elasticsearch..."
-helm upgrade --install elasticsearch elastic/elasticsearch \
+echo "Installing loki-stack..."
+helm upgrade --install loki grafana/loki-stack \
   --namespace logging \
-  --set replicas=1 \
-  --set minimumMasterNodes=1 \
-  --set resources.requests.memory=512Mi \
-  --set resources.limits.memory=1Gi \
-  --set resources.requests.cpu=250m \
-  --set persistence.enabled=false \
-  --set esJavaOpts="-Xmx384m -Xms384m" \
-  --set antiAffinity=soft \
-  --set protocol=http \
-  --set extraEnvs[0].name=xpack.security.enabled \
-  --set extraEnvs[0].value=false \
-  --wait --timeout 5m
-
-echo "Installing kibana..."
-helm upgrade --install kibana elastic/kibana \
-  --namespace logging \
-  --set service.type=ClusterIP \
-  --set resources.requests.memory=256Mi \
-  --set resources.limits.memory=512Mi \
-  --set resources.requests.cpu=250m \
-  --set elasticsearchHosts=http://elasticsearch-master:9200 \
+  --set loki.persistence.enabled=false \
+  --set promtail.enabled=true \
+  --set grafana.enabled=false \
   --wait --timeout 5m
 
 echo "Installing postgresql..."
