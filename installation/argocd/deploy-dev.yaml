@@ -63,4 +63,25 @@ spec:
     automated:
       prune: true
       selfHeal: true
-
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: catalogue-monitoring-dev
+  namespace: argocd
+spec:
+  project: project-catalogue
+  source:
+    repoURL: https://github.com/Fauler/project-catalogue-kubernetes.git
+    targetRevision: main
+    path: catalogue-monitoring
+    helm:
+      valueFiles:
+        - values-dev.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: catalogue-dev
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
