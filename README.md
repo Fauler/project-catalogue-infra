@@ -41,7 +41,9 @@ Port-forwards are included in `start-cluster.sh` — needed to access ArgoCD, Gr
 | Ingress NGINX      | localhost:19080 / :19443| —                                                                           |
 | ArgoCD             | http://localhost:19880  | `admin` / `catalogue_admin`                                                 |
 | Grafana            | http://localhost:19000  | `admin` / `catalogue_admin`                                                 |
-| Kibana             | http://localhost:19601  | `elastic` / `catalogue_elastic`                                             |
+| Prometheus         | http://localhost:19090  | —                                                                           |
+| Alertmanager       | http://localhost:19093  | —                                                                           |
+| Kibana             | http://localhost:19601  | —                                                                           |
 | PostgreSQL         | localhost:19432         | `postgres` / `catalogue_postgres`                                           |
 
 PostgreSQL databases: `dev_auth_db`, `dev_user_db`, `dev_project_db`, `prod_auth_db`, `prod_user_db`, `prod_project_db`

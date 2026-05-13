@@ -50,7 +50,9 @@ helm upgrade --install elasticsearch elastic/elasticsearch \
   --set persistence.enabled=false \
   --set esJavaOpts="-Xmx384m -Xms384m" \
   --set antiAffinity=soft \
-  --set secret.password=catalogue_elastic \
+  --set protocol=http \
+  --set extraEnvs[0].name=xpack.security.enabled \
+  --set extraEnvs[0].value=false \
   --wait --timeout 5m
 
 echo "Installing kibana..."
@@ -60,6 +62,7 @@ helm upgrade --install kibana elastic/kibana \
   --set resources.requests.memory=256Mi \
   --set resources.limits.memory=512Mi \
   --set resources.requests.cpu=250m \
+  --set elasticsearchHosts=http://elasticsearch-master:9200 \
   --wait --timeout 5m
 
 echo "Installing postgresql..."
