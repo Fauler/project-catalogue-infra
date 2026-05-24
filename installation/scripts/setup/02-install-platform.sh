@@ -41,6 +41,10 @@ helm upgrade --install kube-prometheus prometheus-community/kube-prometheus-stac
   --set grafana.additionalDataSources[0].type=loki \
   --set grafana.additionalDataSources[0].url=http://loki.logging.svc.cluster.local:3100 \
   --set grafana.additionalDataSources[0].access=proxy \
+  --set grafana.additionalDataSources[1].name=Tempo \
+  --set grafana.additionalDataSources[1].type=tempo \
+  --set grafana.additionalDataSources[1].url=http://tempo.monitoring.svc.cluster.local:3100 \
+  --set grafana.additionalDataSources[1].access=proxy \
   --wait --timeout 5m
 
 echo "Installing loki-stack..."
@@ -49,6 +53,13 @@ helm upgrade --install loki grafana/loki-stack \
   --set loki.persistence.enabled=false \
   --set promtail.enabled=true \
   --set grafana.enabled=false \
+  --wait --timeout 5m
+
+echo "Installing tempo..."
+helm upgrade --install tempo grafana/tempo \
+  --namespace monitoring \
+  --set tempo.storage.trace.backend=local \
+  --set persistence.enabled=false \
   --wait --timeout 5m
 
 echo "Installing postgresql..."
