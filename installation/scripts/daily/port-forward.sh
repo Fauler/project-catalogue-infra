@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Waits for key services to be ready before forwarding
+echo "Waiting for pods to be ready..."
+kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=argocd-server -n argocd --timeout=60s 2>/dev/null || true
+kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=grafana -n monitoring --timeout=60s 2>/dev/null || true
+kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=postgresql -n database --timeout=60s 2>/dev/null || true
+
 kubectl port-forward svc/argocd-server -n argocd 19880:80 &
 kubectl port-forward svc/kube-prometheus-grafana -n monitoring 19000:80 &
 kubectl port-forward svc/kube-prometheus-kube-prome-prometheus -n monitoring 19090:9090 &
@@ -11,10 +17,7 @@ kubectl port-forward svc/auth-service-dev -n catalogue-dev 19083:8083 &
 kubectl port-forward svc/user-service-dev -n catalogue-dev 19081:8081 &
 kubectl port-forward svc/project-service-dev -n catalogue-dev 19082:8082 &
 
-kubectl port-forward svc/auth-service-prod -n catalogue-prod 19183:8083 &
-kubectl port-forward svc/user-service-prod -n catalogue-prod 19181:8081 &
-kubectl port-forward svc/project-service-prod -n catalogue-prod 19182:8082 &
-
+echo ""
 echo "=== Platform ==="
 echo "ArgoCD:       http://localhost:19880  (admin/catalogue_admin)"
 echo "Grafana:      http://localhost:19000  (admin/catalogue_admin)"
@@ -27,11 +30,6 @@ echo "=== Services (Dev) ==="
 echo "Auth:    http://localhost:19083"
 echo "User:    http://localhost:19081"
 echo "Project: http://localhost:19082"
-echo ""
-echo "=== Services (Prod) ==="
-echo "Auth:    http://localhost:19183"
-echo "User:    http://localhost:19181"
-echo "Project: http://localhost:19182"
 echo ""
 echo "Ctrl+C to stop."
 

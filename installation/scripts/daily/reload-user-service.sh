@@ -19,7 +19,7 @@ kind load docker-image "$IMAGE" --name "$CLUSTER_NAME"
 
 echo "Restarting pods..."
 kubectl rollout restart deployment ${SERVICE}-dev -n catalogue-dev
-kubectl rollout restart deployment ${SERVICE}-prod -n catalogue-prod
+kubectl rollout restart deployment ${SERVICE}-prod -n catalogue-prod 2>/dev/null || echo "Prod not deployed, skipping."
 
 echo "${SERVICE} reloaded."
 
