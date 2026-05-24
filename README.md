@@ -17,6 +17,7 @@ Application charts and deploys live in `project-catalogue-kubernetes`.
 ./installation/scripts/setup/01-create-cluster.sh
 ./installation/scripts/setup/02-install-platform.sh
 ./installation/scripts/setup/03-verify-platform.sh
+./installation/scripts/setup/04-deploy-apps.sh /path/to/project-catalogue
 ```
 
 ## Day-to-day
@@ -26,7 +27,17 @@ Application charts and deploys live in `project-catalogue-kubernetes`.
 ./installation/scripts/daily/stop-cluster.sh
 ```
 
-Port-forwards are included in `start-cluster.sh` — needed to access ArgoCD, Grafana, etc. from localhost.
+⚠️ `start-cluster.sh` also sets up all port-forwards — without it, nothing is accessible from localhost.
+
+### Reload after code changes
+
+```bash
+./installation/scripts/daily/reload-auth-service.sh /path/to/project-catalogue
+./installation/scripts/daily/reload-user-service.sh /path/to/project-catalogue
+./installation/scripts/daily/reload-project-service.sh /path/to/project-catalogue
+```
+
+Rebuilds the Docker image, loads it into Kind, and restarts the pods (dev + prod).
 
 ## Teardown
 
