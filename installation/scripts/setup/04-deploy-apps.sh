@@ -43,12 +43,5 @@ kubectl apply -f "$INFRA_DIR/argocd/project-catalogue-project.yaml"
 kubectl apply -f "$INFRA_DIR/argocd/deploy-dev.yaml"
 kubectl apply -f "$INFRA_DIR/argocd/deploy-prod.yaml"
 
-# Initial sync for prod (after this, prod syncs are manual via ArgoCD UI)
-echo "Syncing prod apps (initial setup only)..."
-sleep 5
-for app in auth-service-prod user-service-prod project-service-prod catalogue-monitoring-prod; do
-  kubectl -n argocd patch application "$app" --type merge -p '{"operation":{"initiatedBy":{"username":"admin"},"sync":{"revision":"HEAD"}}}'
-done
-
-echo "Done. Check ArgoCD at http://localhost:19880"
+echo "Done. Dev syncs automatically. Sync prod manually via ArgoCD UI at http://localhost:19880"
 
