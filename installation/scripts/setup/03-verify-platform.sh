@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-for ns in ingress-nginx argocd monitoring logging database catalogue-dev catalogue-prod; do
+for ns in ingress-nginx argocd monitoring logging database messaging catalogue-dev catalogue-prod; do
   echo "--- ${ns} ---"
   kubectl get pods -n "${ns}" 2>/dev/null || echo "(empty)"
   echo ""
@@ -15,6 +15,15 @@ echo "--- postgresql databases ---"
 POSTGRES_POD=$(kubectl get pods -n database -l app.kubernetes.io/name=postgresql -o jsonpath="{.items[0].metadata.name}" 2>/dev/null)
 if [ -n "${POSTGRES_POD}" ]; then
   kubectl exec -n database "${POSTGRES_POD}" -- env PGPASSWORD=catalogue_postgres psql -U postgres -c "\l" 2>/dev/null || echo "(could not connect)"
+else
+  echo "(no pod found)"
+fi
+
+echo ""
+echo "--- kafka topics ---"
+KAFKA_POD=$(kubectl get pods -n messaging -l app.kubernetes.io/name=kafka -o jsonpath="{.items[0].metadata.name}" 2>/dev/null)
+if [ -n "${KAFKA_POD}" ]; then
+  kubectl exec -n messaging "${KAFKA_POD}" -- /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --list 2>/dev/null || echo "(could not connect)"
 else
   echo "(no pod found)"
 fi

@@ -13,6 +13,7 @@ NAMESPACES=(
   logging
   ingress-nginx
   database
+  messaging
 )
 
 if kind get clusters 2>/dev/null | grep -q "^${CLUSTER_NAME}$"; then

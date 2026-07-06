@@ -77,5 +77,9 @@ CREATE DATABASE prod_project_db;
 " \
   --wait --timeout 5m
 
+echo "Installing kafka..."
+kubectl apply -f "$(cd "$(dirname "$0")/../.." && pwd)/kafka/kafka.yaml"
+kubectl rollout status deployment/kafka -n messaging --timeout 5m
+
 echo "Done. Run 03-verify-platform.sh to check."
 
